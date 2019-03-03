@@ -13,8 +13,15 @@ func TestAskInput(t *testing.T) {
 
 	reader := bufio.NewReader(strings.NewReader(input))
 
+	options := &inquirer.Options{
+		Question: "Please tell me your name",
+		Answers:  []rune{'c', 'a'},
+		Reader:   reader,
+	}
+
 	expected := 'c'
-	actual, err := inquirer.Ask("Please tell me your name", []rune{'c', 'a'}, reader)
+
+	actual, err := inquirer.Ask(options)
 
 	if err != nil {
 		panic(err)
@@ -23,7 +30,30 @@ func TestAskInput(t *testing.T) {
 	if expected != actual {
 		t.Error("Expected", string(expected), "got", string(actual), "instead")
 	}
+}
 
+func TestAskWrongInput(t *testing.T) {
+	input := "u"
+
+	reader := bufio.NewReader(strings.NewReader(input))
+
+	failHandlerCalled := false
+
+	options := &inquirer.Options{
+		Question: "Please tell me your name",
+		Answers:  []rune{'c', 'a'},
+		Reader:   reader,
+		FailHandler: func(opts *inquirer.Options) (rune, error) {
+			failHandlerCalled = true
+			return 0, nil
+		},
+	}
+
+	inquirer.Ask(options)
+
+	if !failHandlerCalled {
+		t.Error("FailHandler has not been called")
+	}
 }
 
 func ExampleAsk_output() {
@@ -31,7 +61,13 @@ func ExampleAsk_output() {
 
 	reader := bufio.NewReader(strings.NewReader(input))
 
-	inquirer.Ask("Please tell me your name", []rune{'c', 'a'}, reader)
+	options := &inquirer.Options{
+		Question: "Please tell me your name",
+		Answers:  []rune{'c', 'a'},
+		Reader:   reader,
+	}
+
+	inquirer.Ask(options)
 	// Output: Please tell me your name
 }
 
@@ -40,7 +76,13 @@ func ExampleAskWrongInput() {
 
 	reader := bufio.NewReader(strings.NewReader(input))
 
-	inquirer.Ask("Please tell me your name", []rune{'c', 'a'}, reader)
+	options := &inquirer.Options{
+		Question: "Please tell me your name",
+		Answers:  []rune{'c', 'a'},
+		Reader:   reader,
+	}
+
+	inquirer.Ask(options)
 
 	// Output:
 	// Please tell me your name

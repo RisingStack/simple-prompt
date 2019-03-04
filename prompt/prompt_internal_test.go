@@ -1,4 +1,4 @@
-package inquirer
+package prompt
 
 import (
 	"bufio"

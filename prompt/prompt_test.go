@@ -1,4 +1,4 @@
-package inquirer_test
+package prompt_test
 
 import (
 	"bufio"
@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Shadowbeetle/inquirer"
+	"github.com/Shadowbeetle/simple-prompt/prompt"
 )
 
 func TestAskInput(t *testing.T) {
@@ -15,7 +15,7 @@ func TestAskInput(t *testing.T) {
 
 	reader := bufio.NewReader(strings.NewReader(input))
 
-	options := &inquirer.Options{
+	options := &prompt.Options{
 		Question: "Please tell me your name",
 		Answers:  []rune{'c', 'a'},
 		Reader:   reader,
@@ -23,7 +23,7 @@ func TestAskInput(t *testing.T) {
 
 	expected := 'c'
 
-	actual, err := inquirer.Ask(options)
+	actual, err := prompt.Ask(options)
 
 	if err != nil {
 		panic(err)
@@ -41,17 +41,17 @@ func TestAskWrongInput(t *testing.T) {
 
 	failHandlerCalled := false
 
-	options := &inquirer.Options{
+	options := &prompt.Options{
 		Question: "Please tell me your name",
 		Answers:  []rune{'c', 'a'},
 		Reader:   reader,
-		FailHandler: func(opts *inquirer.Options) (rune, error) {
+		FailHandler: func(opts *prompt.Options) (rune, error) {
 			failHandlerCalled = true
 			return 0, nil
 		},
 	}
 
-	inquirer.Ask(options)
+	prompt.Ask(options)
 
 	if !failHandlerCalled {
 		t.Error("FailHandler has not been called")
@@ -63,13 +63,13 @@ func ExampleAsk() {
 
 	reader := bufio.NewReader(strings.NewReader(input))
 
-	options := &inquirer.Options{
+	options := &prompt.Options{
 		Question: "Will you marry me? [(r)efuse, (a)ccept]",
 		Answers:  []rune{'r', 'a'},
 		Reader:   reader,
 	}
 
-	response, err := inquirer.Ask(options)
+	response, err := prompt.Ask(options)
 	if err != nil {
 		panic(err)
 	}
@@ -90,11 +90,11 @@ func ExampleAsk_wrongInput() {
 
 	reader := bufio.NewReader(strings.NewReader(input))
 
-	failHandler := func(o *inquirer.Options) (rune, error) {
+	failHandler := func(o *prompt.Options) (rune, error) {
 		return 0, errors.New("You only needed to press either \"c\" or \"a\", yet you chose another character. I am disappointed")
 	}
 
-	options := &inquirer.Options{
+	options := &prompt.Options{
 		Question:             "Will you marry me? [(r)efuse, (a)ccept]",
 		InvalidAnswerMessage: "Accepted responses are \"c\" and \"a\"",
 		Answers:              []rune{'c', 'a'},
@@ -102,7 +102,7 @@ func ExampleAsk_wrongInput() {
 		FailHandler:          failHandler,
 	}
 
-	response, err := inquirer.Ask(options)
+	response, err := prompt.Ask(options)
 
 	if err != nil {
 		fmt.Println(err)

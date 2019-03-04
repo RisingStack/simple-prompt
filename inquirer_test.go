@@ -2,6 +2,8 @@ package inquirer_test
 
 import (
 	"bufio"
+	"errors"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -56,36 +58,64 @@ func TestAskWrongInput(t *testing.T) {
 	}
 }
 
-func ExampleAsk_output() {
-	input := "c"
+func ExampleAsk() {
+	input := "a"
 
 	reader := bufio.NewReader(strings.NewReader(input))
 
 	options := &inquirer.Options{
-		Question: "Please tell me your name",
-		Answers:  []rune{'c', 'a'},
+		Question: "Will you marry me? [(r)efuse, (a)ccept]",
+		Answers:  []rune{'r', 'a'},
 		Reader:   reader,
 	}
 
-	inquirer.Ask(options)
-	// Output: Please tell me your name
+	response, err := inquirer.Ask(options)
+	if err != nil {
+		panic(err)
+	}
+
+	switch response {
+	case 'a':
+		fmt.Println("You made me the happiest dog on Earth!")
+	case 'o':
+		fmt.Println("Woof!")
+	}
+	// Output:
+	// Will you marry me? [(r)efuse, (a)ccept]
+	// You made me the happiest dog on Earth!
 }
 
-func ExampleAskWrongInput() {
+func ExampleAsk_wrongInput() {
 	input := "u"
 
 	reader := bufio.NewReader(strings.NewReader(input))
 
-	options := &inquirer.Options{
-		Question: "Please tell me your name",
-		Answers:  []rune{'c', 'a'},
-		Reader:   reader,
+	failHandler := func(o *inquirer.Options) (rune, error) {
+		return 0, errors.New("You only needed to press either \"c\" or \"a\", yet you chose another character. I am disappointed")
 	}
 
-	inquirer.Ask(options)
+	options := &inquirer.Options{
+		Question:             "Will you marry me? [(r)efuse, (a)ccept]",
+		InvalidAnswerMessage: "Accepted responses are \"c\" and \"a\"",
+		Answers:              []rune{'c', 'a'},
+		Reader:               reader,
+		FailHandler:          failHandler,
+	}
 
+	response, err := inquirer.Ask(options)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	switch response {
+	case 'a':
+		fmt.Println("You made me the happiest dog on Earth!")
+	case 'o':
+		fmt.Println("Woof!")
+	}
 	// Output:
-	// Please tell me your name
-	// Invalid answer, please try again
-	// Please tell me your name
+	// Will you marry me? [(r)efuse, (a)ccept]
+	// Accepted responses are "c" and "a"
+	// You only needed to press either "c" or "a", yet you chose another character. I am disappointed
 }

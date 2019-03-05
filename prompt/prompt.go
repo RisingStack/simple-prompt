@@ -11,12 +11,13 @@ import (
 	"os"
 )
 
-// AskOptions ...
+// AskOptions provides optional arguments for Ask.
+// See defaults below when passing empty AskOptions to Ask.
 type AskOptions struct {
-	InvalidAnswerMessage string
-	Answers              []rune
-	Reader               io.RuneReader
-	FailHandler          func(string, *AskOptions) (rune, error)
+	Reader               io.RuneReader                           // default: bufio.NewReader(os.Stdin)
+	Answers              []rune                                  // default: []rune{'y', 'n'}
+	InvalidAnswerMessage string                                  // default: "Invalid answer, please try again"
+	FailHandler          func(string, *AskOptions) (rune, error) // default: prompt.Ask
 }
 
 func setDefaults(opts *AskOptions) {
@@ -37,6 +38,10 @@ func setDefaults(opts *AskOptions) {
 	}
 }
 
+// Ask prompts the provided question to the user and waits for a single character input from a io.RuneReader passed in AskOptions.Reader (default: os.Stdin).
+// The answer is validated against the contents of AskOptions.Answers, and either the provided input is returned, or the AskOptions.InvalidAnswerMessage is printed
+// and AskOptions.FailHandler is called. If no FailHandler is provided, Ask is called again, prompting again for a valid input.
+//
 func Ask(question string, opts *AskOptions) (rune, error) {
 	setDefaults(opts)
 

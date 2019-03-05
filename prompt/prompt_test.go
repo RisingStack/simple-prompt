@@ -58,11 +58,11 @@ func TestAskWrongInput(t *testing.T) {
 }
 
 func ExampleAsk() {
-	question := "Will you marry me? [(r)efuse, (a)ccept]"
 	input := "a"
 
 	reader := bufio.NewReader(strings.NewReader(input))
 
+	question := "Will you marry me? [(r)efuse, (a)ccept]"
 	options := &prompt.AskOptions{
 		Answers: []rune{'r', 'a'},
 		Reader:  reader,

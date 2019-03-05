@@ -15,15 +15,15 @@ func TestAskInput(t *testing.T) {
 
 	reader := bufio.NewReader(strings.NewReader(input))
 
-	options := &prompt.Options{
-		Question: "Please tell me your name",
-		Answers:  []rune{'c', 'a'},
-		Reader:   reader,
+	question := "Please tell me your name"
+	options := &prompt.AskOptions{
+		Answers: []rune{'c', 'a'},
+		Reader:  reader,
 	}
 
 	expected := 'c'
 
-	actual, err := prompt.Ask(options)
+	actual, err := prompt.Ask(question, options)
 
 	if err != nil {
 		panic(err)
@@ -40,18 +40,17 @@ func TestAskWrongInput(t *testing.T) {
 	reader := bufio.NewReader(strings.NewReader(input))
 
 	failHandlerCalled := false
-
-	options := &prompt.Options{
-		Question: "Please tell me your name",
-		Answers:  []rune{'c', 'a'},
-		Reader:   reader,
-		FailHandler: func(opts *prompt.Options) (rune, error) {
+	question := "Please tell me your name"
+	options := &prompt.AskOptions{
+		Answers: []rune{'c', 'a'},
+		Reader:  reader,
+		FailHandler: func(question string, opts *prompt.AskOptions) (rune, error) {
 			failHandlerCalled = true
 			return 0, nil
 		},
 	}
 
-	prompt.Ask(options)
+	prompt.Ask(question, options)
 
 	if !failHandlerCalled {
 		t.Error("FailHandler has not been called")
@@ -59,17 +58,17 @@ func TestAskWrongInput(t *testing.T) {
 }
 
 func ExampleAsk() {
+	question := "Will you marry me? [(r)efuse, (a)ccept]"
 	input := "a"
 
 	reader := bufio.NewReader(strings.NewReader(input))
 
-	options := &prompt.Options{
-		Question: "Will you marry me? [(r)efuse, (a)ccept]",
-		Answers:  []rune{'r', 'a'},
-		Reader:   reader,
+	options := &prompt.AskOptions{
+		Answers: []rune{'r', 'a'},
+		Reader:  reader,
 	}
 
-	response, err := prompt.Ask(options)
+	response, err := prompt.Ask(question, options)
 	if err != nil {
 		panic(err)
 	}
@@ -90,19 +89,19 @@ func ExampleAsk_wrongInput() {
 
 	reader := bufio.NewReader(strings.NewReader(input))
 
-	failHandler := func(o *prompt.Options) (rune, error) {
+	failHandler := func(question string, o *prompt.AskOptions) (rune, error) {
 		return 0, errors.New("You only needed to press either \"c\" or \"a\", yet you chose another character. I am disappointed")
 	}
 
-	options := &prompt.Options{
-		Question:             "Will you marry me? [(r)efuse, (a)ccept]",
+	question := "Will you marry me? [(r)efuse, (a)ccept]"
+	options := &prompt.AskOptions{
 		InvalidAnswerMessage: "Accepted responses are \"c\" and \"a\"",
 		Answers:              []rune{'c', 'a'},
 		Reader:               reader,
 		FailHandler:          failHandler,
 	}
 
-	response, err := prompt.Ask(options)
+	response, err := prompt.Ask(question, options)
 
 	if err != nil {
 		fmt.Println(err)

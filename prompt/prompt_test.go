@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Shadowbeetle/simple-prompt/prompt"
+	"github.com/RisingStack/simple-prompt/prompt"
 )
 
 func TestAskInput(t *testing.T) {

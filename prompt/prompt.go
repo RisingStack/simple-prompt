@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 )
 
 // AskOptions provides optional arguments for Ask.
@@ -46,6 +47,10 @@ func Ask(question string, opts *AskOptions) (rune, error) {
 	setDefaults(opts)
 
 	fmt.Println(question)
+
+	exec.Command("stty", "-F", "/dev/tty", "cbreak", "min", "1").Run()
+	exec.Command("stty", "-F", "/dev/tty", "-echo").Run()
+	defer exec.Command("stty", "-F", "/dev/tty", "echo").Run()
 
 	char, _, err := opts.Reader.ReadRune()
 

@@ -44,7 +44,7 @@ func TestAskWrongInput(t *testing.T) {
 	options := &prompt.AskOptions{
 		Answers: []rune{'c', 'a'},
 		Reader:  reader,
-		FailHandler: func(question string, opts *prompt.AskOptions) (rune, error) {
+		FailHandlerFunc: func(question string, opts *prompt.AskOptions) (rune, error) {
 			failHandlerCalled = true
 			return 0, nil
 		},
@@ -53,7 +53,7 @@ func TestAskWrongInput(t *testing.T) {
 	prompt.Ask(question, options)
 
 	if !failHandlerCalled {
-		t.Error("FailHandler has not been called")
+		t.Error("FailHandlerFunc has not been called")
 	}
 }
 
@@ -98,7 +98,7 @@ func ExampleAsk_wrongInput() {
 		InvalidAnswerMessage: "Accepted responses are \"c\" and \"a\"",
 		Answers:              []rune{'c', 'a'},
 		Reader:               reader,
-		FailHandler:          failHandler,
+		FailHandlerFunc:      failHandler,
 	}
 
 	response, err := prompt.Ask(question, options)

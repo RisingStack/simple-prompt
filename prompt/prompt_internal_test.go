@@ -42,14 +42,14 @@ func TestSetDefaults(t *testing.T) {
 		InvalidAnswerMessage: invalidAnswerMessage,
 		Answers:              answers,
 		Reader:               reader,
-		FailHandler:          failHandler,
+		FailHandlerFunc:      failHandler,
 	}
 
 	setDefaults(actual)
 
-	actual.FailHandler(question, actual)
+	actual.FailHandlerFunc(question, actual)
 	if !failHandlerRan {
-		t.Error("Could not call FailHandler on actual Options. FailHandler should not be modified once set")
+		t.Error("Could not call FailHandlerFunc on actual Options. FailHandlerFunc should not be modified once set")
 	}
 
 	strippedActual := stripOptions(actual)
